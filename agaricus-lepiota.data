@@ -1,4 +1,4 @@
-Classes,Cap-Shape,Cap-Surface,Cap-Color,Bruises?,Odor,Gill-Attachment,Gill-Spacing,Gill-Size,Gill-Color,Stalk-Shape,Stalk-Root,Stalk-Surface-Above-Ring,Stalk-Surface-Below-Ring,Stalk-Color-Above-Ring,Stalk-Color-Below-Ring,Veil-Type,Veil-Color,Ring-Number,Ring-Type,Spore-Print-Color,Population,Habitat
+Classes,Cap-Shape,Cap-Surface,Cap-Color,Bruises,Odor,Gill-Attachment,Gill-Spacing,Gill-Size,Gill-Color,Stalk-Shape,Stalk-Root,Stalk-Surface-Above-Ring,Stalk-Surface-Below-Ring,Stalk-Color-Above-Ring,Stalk-Color-Below-Ring,Veil-Type,Veil-Color,Ring-Number,Ring-Type,Spore-Print-Color,Population,Habitat
 p,x,s,n,t,p,f,c,n,k,e,e,s,s,w,w,p,w,o,p,k,s,u
 e,x,s,y,t,a,f,c,b,k,e,c,s,s,w,w,p,w,o,p,n,n,g
 e,b,s,w,t,l,f,c,b,n,e,c,s,s,w,w,p,w,o,p,n,n,m
