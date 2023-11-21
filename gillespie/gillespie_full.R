@@ -1,31 +1,32 @@
-#added header to agaricus-lepiota.data file for easier analysis
+#library for confusion matrix
+#install.packages("caret")
+library(caret)
+
 #read in data
-df <- read.table("agaricus-lepiota.data", fileEncoding="UTF-8", sep=",", header=TRUE)
+df <- read.table("agaricus-lepiota-original.data", fileEncoding="UTF-8", sep=",", header=FALSE)
+
+#added headers to dataframe
+colnames(df) <- c("Classes","Cap.Shape","Cap.Surface","Cap.Color","Bruises","Odor",
+                  "Gill.Attachment","Gill.Spacing","Gill.Size","Gill.Color","Stalk.Shape",
+                  "Stalk.Root","Stalk.Surface.Above.Ring","Stalk.Surface.Below.Ring",
+                  "Stalk.Color.Above.Ring","Stalk.Color.Below.Ring","Veil.Type","Veil.Color",
+                  "Ring.Number","Ring.Type","Spore.Print.Color","Population","Habitat")
+
+# Function to get unique values for each column
+get_unique_values <- function(column) {
+  unique_values <- unique(column)
+}
+
+lapply(df, get_unique_values)
 
 #removed the column Stalk.root because had over 2.5k missing values
 df = subset(df, select = -c(Stalk.Root))
 
-#gives you counts of characters per column
-table(df$Bruises)
-
 #veil.type only has a single value so its of no use so deleted column
 df = subset(df, select = -c(Veil.Type))
-summary(df)
-
-col_names<-names(df) #vector of column names
-set.seed(1)
-#displays counts for categorical variables by column
-for(i in col_names){
-  print(i)
-  print(table(df[,i]))
-  cat("\n")
-}
-
-dfByGillColor<- df[df$Gill.Color == "y",]
-simple = subset(dfByGillColor, select = c(Gill.Color, Classes))
-table(simple)
 
 #package for decision tree
+install.packages("party")
 library(party)
 
 #all variables are initally set to chr and we need them as factors for the decision tree
@@ -51,64 +52,51 @@ pred <- predict(tree, test)
 cm <- table(pred, test$Classes)
 cm
 
-treeDf <- data.frame(seed=c(), accuracy=c())
-for(i in 0:50)
-{
-  set.seed(i)
-  index <- sample(1:nrow(factorDf), round(.80 * nrow(factorDf)))
-  train <- factorDf[index,]
-  test <- factorDf[-index,]
-  nrow(train)
-  nrow(test)
-  print(paste("At seed", i)) 
-  model<-ctree(fmla, data=train)
-  pred <- predict(model, test)
-  cm = table(test$Classes, pred)
-  accuracy <- 1-((cm[2]+cm[3])/sum(cm))
-  treeDf <- rbind(treeDf, list(i, accuracy))
-  print(paste("added", i, accuracy))
-}
-
-treeDf
-
 factorDf <- df
 factorDf <- as.data.frame(unclass(df), stringsAsFactors = TRUE)
 intDf <- sapply(factorDf, as.integer)
 str(intDf)
 
-
-ans <- as.data.frame(unclass(df), stringsAsFactors = TRUE)
-ans <- sapply(ans, as.numeric)
-ans
-
-install.packages("neuralnet")
 #-----------------------------------------------------
 #name data something better
+install.packages("neuralnet")
 library(neuralnet)
+
 shroomdata <- df
 shroomdata <- factorDf
+
 #convert p and e to integers 1 and 0 respectively in shroomdata
 shroomdata$Classes <- as.integer(shroomdata$Classes == 'p')
+
 #convert all characters to integers
 shroomdata <-sapply(shroomdata, as.numeric)
+
 #generate random number so results are same every time
 set.seed(500)
+
 #Split the dataset into test and train sets
 index <- sample(1:nrow(shroomdata), round(0.80 * nrow(shroomdata)))
 train <- shroomdata[index, ]
 test <- shroomdata[-index, ]
 nrow(test)
-#formula USE IT
+
+#formula
 fmla <- Classes~Cap.Shape+Cap.Surface+Cap.Color+Bruises+Odor+Gill.Attachment+Gill.Spacing+Gill.Size+Gill.Color+Stalk.Shape+Stalk.Surface.Above.Ring+Stalk.Surface.Below.Ring+Stalk.Color.Above.Ring+Stalk.Color.Below.Ring+Veil.Color+Ring.Number+Ring.Type+Spore.Print.Color+Population+Habitat
-#hidden was 0
+
 #train the neural net
 perceptronModel <- neuralnet(fmla, data = train, hidden = c(4,3), learningrate = 0.1, linear.output = FALSE,)
+
+#get the predicted values for the test dataframe
 pred <- neuralnet::compute(perceptronModel, test)
+
+#grab the result from its prediction and round to either 1 or 0
 yhat <- pred$net.result
 yhat <- round(yhat, 0)
-nrow(yhat)
+
+#get confusion matrix of test vs predicted
 cm <- table(test[,1], yhat)
 cm
+
 plot(perceptronModel)
 
 #-------Support Vector Machines-----------------
