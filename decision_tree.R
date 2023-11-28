@@ -1,5 +1,5 @@
 #read in data
-df <- read.table("agaricus-lepiota-original.data", fileEncoding="UTF-8", sep=",", header=FALSE)
+df <- read.table("agaricus-lepiota.data", fileEncoding="UTF-8", sep=",", header=FALSE)
 
 #added headers to dataframe
 colnames(df) <- c("Classes","Cap.Shape","Cap.Surface","Cap.Color","Bruises","Odor",
