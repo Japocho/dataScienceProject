@@ -10,7 +10,7 @@ library(neuralnet)
 #View(shroom)
 
 #read in data
-shroom <- read.table("agaricus-lepiota-original.data", fileEncoding="UTF-8", sep=",", header=FALSE)
+shroom <- read.table("agaricus-lepiota.data", fileEncoding="UTF-8", sep=",", header=FALSE)
 
 #added headers to dataframe
 colnames(shroom) <- c("Classes","Cap.Shape","Cap.Surface","Cap.Color","Bruises","Odor",
