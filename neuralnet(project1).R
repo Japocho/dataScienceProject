@@ -5,8 +5,20 @@ install.packages('neuralnet')
 library(neuralnet)
 
 #read in the data
-shroom <- read.table('agaricus-lepiota.data', fileEncoding="UTF-8", sep=",", header=TRUE)
-View(shroom)
+#THIS IS THE OLD WAY TO READ IN THE DATA (I HAD MANUALLY ADDED THE COLNAMES IN NOTEPAD BEFORE)
+#shroom <- read.table('agaricus-lepiota.data', fileEncoding="UTF-8", sep=",", header=TRUE)
+#View(shroom)
+
+#read in data
+shroom <- read.table("agaricus-lepiota-original.data", fileEncoding="UTF-8", sep=",", header=FALSE)
+
+#added headers to dataframe
+colnames(shroom) <- c("Classes","Cap.Shape","Cap.Surface","Cap.Color","Bruises","Odor",
+                  "Gill.Attachment","Gill.Spacing","Gill.Size","Gill.Color","Stalk.Shape",
+                  "Stalk.Root","Stalk.Surface.Above.Ring","Stalk.Surface.Below.Ring",
+                  "Stalk.Color.Above.Ring","Stalk.Color.Below.Ring","Veil.Type","Veil.Color",
+                  "Ring.Number","Ring.Type","Spore.Print.Color","Population","Habitat")
+
 #see how many "?"'s are in Stalk.Root
 missingsr <- subset(shroom, shroom$Stalk.Root=="?")
 View(missingsr)
@@ -58,7 +70,7 @@ train <- shroomdata[index, ]
 test <- shroomdata[-index, ]
 
 #formula USE IT
-fmla <- Classes~Cap.Shape+Cap.Surface+Cap.Color+Bruises.+Odor+Gill.Attachment+Gill.Spacing+Gill.Size+Gill.Color+Stalk.Shape+Stalk.Surface.Above.Ring+Stalk.Surface.Below.Ring+Stalk.Color.Above.Ring+Stalk.Color.Below.Ring+Veil.Color+Ring.Number+Ring.Type+Spore.Print.Color+Population+Habitat
+fmla <- Classes~Cap.Shape+Cap.Surface+Cap.Color+Bruises+Odor+Gill.Attachment+Gill.Spacing+Gill.Size+Gill.Color+Stalk.Shape+Stalk.Surface.Above.Ring+Stalk.Surface.Below.Ring+Stalk.Color.Above.Ring+Stalk.Color.Below.Ring+Veil.Color+Ring.Number+Ring.Type+Spore.Print.Color+Population+Habitat
 
 #train the neural net
 perceptronModel <- neuralnet(fmla, data = train, hidden = 3, learningrate = 0.1, linear.output = FALSE,)
