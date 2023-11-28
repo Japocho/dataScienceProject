@@ -16,10 +16,10 @@ get_unique_values <- function(column) {
 lapply(df, get_unique_values)
 
 #removed the column Stalk.root because had over 2.5k missing values
-df = subset(df, select = -c(Stalk.Root))
+df <- subset(df, select = -c(Stalk.Root))
 
 #veil.type only has a single value so its of no use so deleted column
-df = subset(df, select = -c(Veil.Type))
+df <- subset(df, select = -c(Veil.Type))
 
 #all variables are initally set to chr and we need them as factors for the decision tree
 factorDf <- df
@@ -38,7 +38,7 @@ install.packages("party")
 library(party)
 
 #make decision tree from party library
-tree<-ctree(fmla, data=train)
+tree <- ctree(fmla, data=train)
 
 #plots the tree
 plot(tree)
