@@ -1,0 +1,70 @@
+df <- read.table("agaricus-lepiota.data", fileEncoding="UTF-8", sep=",", header=FALSE)
+
+colnames(df) <- c("Classes","Cap.Shape","Cap.Surface","Cap.Color","Bruises","Odor",
+                  "Gill.Attachment","Gill.Spacing","Gill.Size","Gill.Color","Stalk.Shape",
+                  "Stalk.Root","Stalk.Surface.Above.Ring","Stalk.Surface.Below.Ring",
+                  "Stalk.Color.Above.Ring","Stalk.Color.Below.Ring","Veil.Type","Veil.Color",
+                  "Ring.Number","Ring.Type","Spore.Print.Color","Population","Habitat")
+
+#removed the column Stalk.root because had over 2.5k missing values
+df = subset(df, select = -c(Stalk.Root))
+
+col_names<-names(df) #vector of column names
+
+#veil.type only has a single value so its of no use so deleted column
+df = subset(df, select = -c(Veil.Type))
+
+install.packages("e1071")
+library(e1071)
+
+# Convert character columns to factors
+df[] <- lapply(df, as.factor)
+
+# Split the data into training and testing sets
+set.seed(123)  # Set seed for reproducibility
+split_index <- sample(1:nrow(df), 0.7 * nrow(df))
+train_data <- df[split_index, ]
+test_data <- df[-split_index, ]
+
+# Create the SVM model
+svm_model <- svm(Classes ~ ., data = train_data, kernel = "radial")
+
+# Make predictions on the test set
+predictions <- predict(svm_model, test_data)
+
+# Create confusion matrix
+conf_matrix <- table(Actual = test_data$Classes, Predicted = predictions)
+
+# Display confusion matrix
+print(conf_matrix)
+
+# Get the feature weights
+feature_weights <- t(svm_model$coefs) %*% svm_model$SV
+
+# Summarize feature weights
+feature_importance <- apply(feature_weights, 2, sum)
+
+# Sort features by importance
+sorted_features <- names(feature_importance[order(-feature_importance)])
+
+# Display feature importance
+print(sorted_features)
+
+install.packages("ggplot2")
+library(ggplot2)
+
+# Make predictions on the training set
+train_predictions <- predict(svm_model, train_data)
+
+# Identify support vectors
+are_support_vectors <- train_data$Classes == train_predictions
+
+# Create a scatter plot with customized legend
+ggplot(train_data, aes(x = Odor, y = Spore.Print.Color, color = Classes)) +
+  geom_point(alpha = 0.5) +
+  geom_point(data = train_data[are_support_vectors, ], color = "black", size = 3, shape = 1) +  # Support vectors in black
+  labs(title = "Support Vectors in SVM Model",
+       x = "Odor",
+       y = "Spore Print Color") +
+  scale_color_manual(values = c("e" = "blue", "p" = "red"), name = "Classes") +  # Customize legend
+  theme_minimal()
