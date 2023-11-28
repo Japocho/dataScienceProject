@@ -1,7 +1,3 @@
-#library for confusion matrix
-#install.packages("caret")
-library(caret)
-
 #read in data
 df <- read.table("agaricus-lepiota-original.data", fileEncoding="UTF-8", sep=",", header=FALSE)
 
@@ -25,10 +21,6 @@ df = subset(df, select = -c(Stalk.Root))
 #veil.type only has a single value so its of no use so deleted column
 df = subset(df, select = -c(Veil.Type))
 
-#package for decision tree
-install.packages("party")
-library(party)
-
 #all variables are initally set to chr and we need them as factors for the decision tree
 factorDf <- df
 factorDf <- as.data.frame(unclass(df), stringsAsFactors = TRUE)
@@ -41,7 +33,11 @@ test <- factorDf[-index,]
 #formula for y based on all variables of dataframe
 fmla <- Classes~Cap.Shape+Cap.Surface+Cap.Color+Bruises+Odor+Gill.Attachment+Gill.Spacing+Gill.Size+Gill.Color+Stalk.Shape+Stalk.Surface.Above.Ring+Stalk.Surface.Below.Ring+Stalk.Color.Above.Ring+Stalk.Color.Below.Ring+Veil.Color+Ring.Number+Ring.Type+Spore.Print.Color+Population+Habitat
 
-#make decision tree
+#package for decision tree
+install.packages("party")
+library(party)
+
+#make decision tree from party library
 tree<-ctree(fmla, data=train)
 
 #plots the tree
@@ -123,5 +119,5 @@ classifier = svm(formula = fmla,
                  kernel = 'linear')
 
 y_pred = predict(classifier, test)
-cm = table(test[,1], y_pred) 
+cm = table(test[,1], y_pred)
 cm
